@@ -2,7 +2,6 @@
 
 ![Language](https://img.shields.io/badge/language-C-00599C?style=for-the-badge&logo=c&logoColor=white)
 ![Library](https://img.shields.io/badge/library-SDL2-FF3D00?style=for-the-badge&logo=sdl&logoColor=white)
-![Status](https://img.shields.io/badge/status-Functional-success?style=for-the-badge)
 
 Um emulador **CHIP-8** robusto escrito em C puro utilizando a biblioteca **SDL2** para renderização gráfica e áudio. Este projeto foca em emulação precisa, performance e recursos extras visuais como interpolação de cores (lerping).
 
@@ -34,9 +33,13 @@ Você precisará do compilador `gcc`, `make` e da biblioteca de desenvolvimento 
 ```bash
 sudo apt-get install build-essential libsdl2-dev
 ```
-** Compilando **
+**Compilando**
 Digite make em seu terminal para compilar o chip8
-```make```
+```bash
+make
+```
 
-** Utilização **
-```$ ./chip8 'ROM_DESEJADA'```
+**Utilização**
+```bash
+$ ./chip8 'ROM_DESEJADA'
+```
