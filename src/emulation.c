@@ -3,7 +3,7 @@
 #include "instruction_emulation.h"
 
 void emulate_instruction(chip8_t *chip8, config_t *config) {
-    bool carry;   // valor carry flag/VF
+    bool carry; // valor carry flag/VF
 
     // Get next opcode from ram 
     chip8->inst.opcode = (chip8->ram[chip8->PC] << 8) | chip8->ram[chip8->PC+1];
