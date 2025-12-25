@@ -82,26 +82,7 @@ bool emulator_initialize(struct Emulator *emulator) {
     emulator->instructions_per_second = 600;
     emulator->extension = CHIP8;
 
-    emulator->user_interface = (struct UserInterface){
-        .desired_window_width = 64,
-        .desired_window_height = 32,
-        .fg_color = 0xFFFFFFFF,
-        .bg_color = 0x000000FF,
-        .scale_factor = 20,
-        .pixel_outlines = true,
-        .square_wave_freq = 440,
-        .audio_sample_rate = 44100,
-        .volume = 3000,
-        .color_lerp_rate = 0.7,
-    };
-
-    // Init pixels to bg color
-    memset(
-        &emulator->user_interface.pixel_color[0],
-        emulator->user_interface.bg_color,
-        sizeof emulator->user_interface.pixel_color
-    );
-
+    emulator_user_interface_initialize(&emulator->user_interface, &emulator->emulated_system);
     emulator_user_interface_clear_screen(&emulator->user_interface);
 
     return true;
@@ -121,7 +102,6 @@ void emulator_update(struct Emulator *emulator) {
 
     // Update timers
     if (emulator->emulated_system.delay_timer > 0) emulator->emulated_system.delay_timer--;
-    else { emulator->emulated_system.delay_timer = 60; }
 
     if (emulator->emulated_system.sound_timer > 0) {
         emulator->emulated_system.sound_timer--;
@@ -129,7 +109,6 @@ void emulator_update(struct Emulator *emulator) {
     }
     else {
         emulator->user_interface.should_play_sound = false;
-        emulator->emulated_system.sound_timer = 60;
     }
 
     // Update user interface

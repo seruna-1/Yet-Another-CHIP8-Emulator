@@ -56,52 +56,72 @@ void emulator_user_interface_audio_callback(void *userdata, uint8_t *stream, int
 }
 
 bool emulator_user_interface_initialize(struct UserInterface *user_interface, struct EmulatedSystem *emulated_system) {
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0) {
-    SDL_Log("Could not Initialize SDL: %s\n", SDL_GetError());
-    return false;
-  }
+    *user_interface = (struct UserInterface){
+        .desired_window_width = 64,
+        .desired_window_height = 32,
+        .fg_color = 0xFFFFFFFF,
+        .bg_color = 0x000000FF,
+        .scale_factor = 20,
+        .pixel_outlines = true,
+        .square_wave_freq = 440,
+        .audio_sample_rate = 44100,
+        .volume = 3000,
+        .color_lerp_rate = 0.7,
+    };
 
-  user_interface->window = SDL_CreateWindow("EMULADOR CHIP8", 
+    // Init pixels to bg color
+    memset(
+        &user_interface->pixel_color[0],
+        user_interface->bg_color,
+        sizeof user_interface->pixel_color
+    );
+
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0) {
+        SDL_Log("Could not Initialize SDL: %s\n", SDL_GetError());
+        return false;
+    }
+
+    user_interface->window = SDL_CreateWindow("EMULADOR CHIP8", 
                                  SDL_WINDOWPOS_CENTERED,
                                  SDL_WINDOWPOS_CENTERED,
                                  user_interface->desired_window_width * user_interface->scale_factor,
                                  user_interface->desired_window_height * user_interface->scale_factor,
                                  0);
 
-  if (!user_interface->window) {
-    SDL_Log("Could not initialize window: %s\n", SDL_GetError());
-    return false;
-  }
+    if (!user_interface->window) {
+        SDL_Log("Could not initialize window: %s\n", SDL_GetError());
+        return false;
+    }
 
-  user_interface->renderer = SDL_CreateRenderer(user_interface->window, -1, SDL_RENDERER_ACCELERATED);
+    user_interface->renderer = SDL_CreateRenderer(user_interface->window, -1, SDL_RENDERER_ACCELERATED);
 
-  if (!user_interface->renderer) {
-    SDL_Log("Could not initialize renderer: %s\n", SDL_GetError());
-    return false;
-  }
+    if (!user_interface->renderer) {
+        SDL_Log("Could not initialize renderer: %s\n", SDL_GetError());
+        return false;
+    }
 
-  user_interface->want = (SDL_AudioSpec){
-    .freq = 44100,
-    .format = AUDIO_S16LSB,
-    .channels = 1,
-    .samples = 512,
-    .callback = emulator_user_interface_audio_callback,
-    .userdata = emulated_system,
-  };
+    user_interface->want = (SDL_AudioSpec){
+        .freq = 44100,
+        .format = AUDIO_S16LSB,
+        .channels = 1,
+        .samples = 512,
+        .callback = emulator_user_interface_audio_callback,
+        .userdata = emulated_system,
+    };
 
-  user_interface->dev = SDL_OpenAudioDevice(NULL, 0, &user_interface->want, &user_interface->have, 0);
+    user_interface->dev = SDL_OpenAudioDevice(NULL, 0, &user_interface->want, &user_interface->have, 0);
 
-  if (user_interface->dev == 0) {
-    SDL_Log("Could not initiate audio device: %s\n", SDL_GetError());
-    return false;
-  }
+    if (user_interface->dev == 0) {
+        SDL_Log("Could not initiate audio device: %s\n", SDL_GetError());
+        return false;
+    }
 
-  if ((user_interface->want.format != user_interface->have.format) || (user_interface->want.channels != user_interface->have.channels)) {
-    SDL_Log("Could not get audio spec: %s\n", SDL_GetError());
-    return false;
-  }
+    if ((user_interface->want.format != user_interface->have.format) || (user_interface->want.channels != user_interface->have.channels)) {
+        SDL_Log("Could not get audio spec: %s\n", SDL_GetError());
+        return false;
+    }
 
-  return true;
+    return true;
 }
 
 void emulator_user_interface_draw(struct UserInterface *user_interface, struct EmulatedSystem *emulated_system) {
@@ -313,5 +333,6 @@ void emulator_user_interface_update(struct UserInterface *user_interface, struct
       }
   }
 
+  emulator_user_interface_draw(user_interface, emulated_system);
   SDL_PauseAudioDevice(user_interface->dev, !user_interface->should_play_sound); // Maybe pause sound
 }
