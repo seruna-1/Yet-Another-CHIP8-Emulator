@@ -6,6 +6,10 @@
 
 #define STACK_SIZE 12
 
+// From emulated.c
+extern const uint32_t emulated_system_entry_point;
+extern const uint8_t emulated_system_font[16][5];
+
 struct Instruction {
   uint16_t opcode; // 1º half-byte
   uint16_t NNN; // 2º, 3º and 4º half-byte (12-bit memory address)
@@ -34,3 +38,9 @@ struct EmulatedSystem {
   const char *rom_name;
   struct Instruction instruction;
 };
+
+// Writes struct Emulator->EmulatedSystem data to a binary file
+bool emulated_save_state(struct EmulatedSystem *emulated_system, const char *filename);
+
+// Loads data from a binary file to Emulator->EmulatedSystem
+bool emulated_load_state(struct EmulatedSystem *emulated_system, const char *filename);

@@ -4,37 +4,6 @@
 
 #include <stdbool.h>
 
-bool emulator_save_state(struct Emulator *emulator, const char *filename) {
-    FILE *file = fopen(filename, "wb");
-    if (!file) return false;
-    else if (fwrite(emulator, sizeof(struct Emulator), 1, file) != 1) {
-        fclose(file);
-        return false;
-    }
-    else {
-        fclose(file);
-        return true;
-    }
-}
-
-bool emulator_load_state(struct Emulator *emulator, const char *filename) {
-    FILE *file = fopen(filename, "rb");
-
-    if (!file) {
-      fprintf(stderr, "Não foi possível encontrar o save %s\n", filename);
-      return false;
-    }
-    else if (fread(emulator, sizeof(struct Emulator), 1, file) != 1) {
-        fprintf(stderr, "Não foi possível ler o save %s\n", filename);
-        fclose(file);
-        return false;
-    }
-    else {
-        fclose(file);
-        return true;
-    }
-}
-
 bool emulator_load_rom(struct Emulator *emulator, const char* rom_name) {
     // Open ROM file
     FILE *rom = fopen(rom_name, "rb");
@@ -73,7 +42,7 @@ bool emulator_load_rom(struct Emulator *emulator, const char* rom_name) {
 // Cleans emulator, loads font, sets default state
 bool emulator_initialize(struct Emulator *emulator) {
     memset(&emulator->emulated_system, 0, sizeof(struct EmulatedSystem)); // clean start
-    memcpy(&emulator->emulated_system.ram, &emulated_system_font, sizeof(emulated_system_font)); // Load font
+    memcpy(&emulator->emulated_system.ram, emulated_system_font, sizeof(emulated_system_font)); // Load font
 
     // Set defaults
     emulator->emulated_system.state = RUNNING;
