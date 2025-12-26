@@ -8,10 +8,6 @@
 #include "emulated.h"
 #include "user_interface/sdl/interface.h"
 
-// From emulated.c
-extern const uint32_t emulated_system_entry_point;
-extern const uint8_t emulated_system_font;
-
 struct Emulator {
   // how many instructions are executed each second.
   uint32_t instructions_per_second;
