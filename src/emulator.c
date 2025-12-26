@@ -42,7 +42,7 @@ bool emulator_load_rom(struct Emulator *emulator, const char* rom_name) {
 // Cleans emulator, loads font, sets default state
 bool emulator_initialize(struct Emulator *emulator) {
     memset(&emulator->emulated_system, 0, sizeof(struct EmulatedSystem)); // clean start
-    memcpy(&emulator->emulated_system.ram, &emulated_system_font, sizeof(emulated_system_font)); // Load font
+    memcpy(&emulator->emulated_system.ram, emulated_system_font, sizeof(emulated_system_font)); // Load font
 
     // Set defaults
     emulator->emulated_system.state = RUNNING;
